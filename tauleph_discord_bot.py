@@ -3,10 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from colorama import init
 import os
-from LLMManaging.llm_config_manager import LLMConfigManager
-from ui_message_handler import UIMessageHandler
-from message_processor import MessageProcessor
-from LLMManaging.message_manager import MessageManager
+from main import llm_config, message_manager, ui_msg_handler, _entry_point
 from dotenv import load_dotenv
 from typing import Literal
 
@@ -18,9 +15,6 @@ init()
 load_dotenv()
 
 # Initialize the class of the message manager and the intents.
-message_manager=MessageManager()
-llm_config = LLMConfigManager()
-ui_msg_handler=UIMessageHandler()
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -181,9 +175,9 @@ class MyBot(commands.Bot):
         Args:
             message (discord.Message): The message to process.
         """
-        message_processor = MessageProcessor(message)
-        await message_processor.process_message()
-        
+        # Start the message processing flow.
+        await _entry_point(message)
+
 
 
 bot = MyBot(command_prefix="", intents=intents, help_command=None)
