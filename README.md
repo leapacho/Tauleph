@@ -1,2 +1,2 @@
 # Tauleph
-A simple Discord AI bot written in Python, using discord.py, LangChain and LangGraph.
+A simple Discord AI bot written in Python, using Discord.py, LangChain and LangGraph.
