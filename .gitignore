@@ -1,9 +1,0 @@
-/.env
-/.venv
-/.vscode
-/__pycache__
-/checkpoints.sqlite
-/deprecated_scripts
-/groq_api_errors.log
-/LLMManaging/__pycache__
-/utils/__pycache__
