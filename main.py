@@ -1,24 +1,28 @@
-from message_processor import MessageProcessor
-from checkpoint_manager import CheckpointManager
+import discord
+from discord.ext import commands
+from dotenv import load_dotenv
+from discord_obj_processor import discord_obj_processor
+from entry_point import entry_point
+import os
 
+load_dotenv()
 
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
 
-checkpoint_manager = CheckpointManager()
+bot = commands.Bot(command_prefix="", intents=intents)
 
-async def entry_point():
-    """
-    Entry point for processing messages.
-    
-    This method is called to start the message processing flow.
-    """
-    # Process the message.
-    message_processor = MessageProcessor()
-    result = await message_processor.process_message()
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user.name} - {bot.user.id}')
+    print('------')
 
-    # Get the API response.
-    llm_output = await checkpoint_manager.response(result[0], result[1])
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author == bot.user:
+        return
+    await discord_obj_processor.update_object_variables(message, bot)
+    await message.channel.send(await entry_point())
 
-    return llm_output
-
-
-    
+bot.run(os.environ.get("BOT_API_KEY"))
