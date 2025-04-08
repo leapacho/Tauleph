@@ -9,7 +9,7 @@ async def entry_point():
     """
     Entry point for processing messages.
     
-    This method is called to start the message processing flow.
+    This function is called to start the message processing flow.
     """
     # Process the message.
     message_processor = MessageProcessor()

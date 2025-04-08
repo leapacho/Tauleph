@@ -23,6 +23,8 @@ async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
     await discord_obj_processor.update_object_variables(message, bot)
-    await message.channel.send(await entry_point())
+    llm_message = await entry_point()
+    for chunk in llm_message:
+        await message.channel.send(chunk)
 
 bot.run(os.environ.get("BOT_API_KEY"))

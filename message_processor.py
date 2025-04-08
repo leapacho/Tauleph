@@ -58,10 +58,10 @@ class MessageProcessor:
 
         async with discord_obj_processor.message.channel.typing():
             image_output=([
-                {"type": "text", "text": f"{discord_obj_processor.message_author} has sent a message: {discord_obj_processor.message_content}"},
+                {"type": "text", "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"},
                 {"type": "image_url", "image_url": discord_obj_processor.att_url}
                 ], 
-                "You are a helpful AI called Tauleph.")
+                "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
         return image_output
 
     async def _process_audio(self):
@@ -74,9 +74,9 @@ class MessageProcessor:
         file = requests.get(discord_obj_processor.att_url)
 
         async with discord_obj_processor.message.channel.typing():
-            speech_output=([{"type": "text", "text": f"{discord_obj_processor.message_author} has sent a message: {discord_obj_processor.message_content}"},
+            speech_output=([{"type": "text", "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"},
                             {"type": "media", "mime_type": discord_obj_processor.att_type, "data": file.content}],
-                            "You are a helpful AI called Tauleph.")
+                            "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
         # Note: The audio processing is not implemented yet.
         return speech_output
 
@@ -90,7 +90,7 @@ class MessageProcessor:
         async with discord_obj_processor.message.channel.typing():
                 llm_output=([{
                     "type": "text",
-                    "text": f"{discord_obj_processor.message_author} sent a message: {discord_obj_processor.message_content}"
+                    "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"
                 }], 
-                "You are a helpful AI called Tauleph.")
+                "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
         return llm_output
