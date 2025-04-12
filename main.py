@@ -24,7 +24,6 @@ async def on_message(message: discord.Message):
         return
     await discord_obj_processor.update_object_variables(message, bot)
     llm_message = await entry_point()
-    for chunk in llm_message:
-        await message.channel.send(chunk)
+    for chunk in llm_message: await message.channel.send(chunk)
 
 bot.run(os.environ.get("BOT_API_KEY"))
