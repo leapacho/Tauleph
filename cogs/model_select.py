@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from config import config
-from discord_obj_processor import discord_obj_processor
+from discord_obj_processor import discord_obj
 
 
 class ModelSelect(discord.ui.Select):
@@ -80,7 +80,7 @@ class SelectModel(commands.Cog):
         """
         Sends a message with the guild's selected model.
         """
-        discord_obj_processor.guild = interaction.guild
+        discord_obj.guild = interaction.guild
         llm_model = await config.current_model()
 
         await interaction.response.send_message(

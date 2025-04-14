@@ -3,7 +3,7 @@ import os
 
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord_obj_processor import discord_obj_processor
+from discord_obj_processor import discord_obj
 from entry_point import entry_point
 from utils.validation import validate_message
 
@@ -23,12 +23,13 @@ async def on_ready():
 
     await bot.load_extension("cmds.help_commands")
     await bot.load_extension("cogs.model_select")
+    await bot.load_extension("cogs.sys_prompts")
 
     await bot.tree.sync()
 
 @bot.event
 async def on_message(message: discord.Message):
-    await discord_obj_processor.update_object_variables(message, bot)
+    await discord_obj.update_object_variables(message, bot)
     if not await validate_message(message):
         return
     llm_message = await entry_point()

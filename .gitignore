@@ -9,3 +9,4 @@ __pycache__/config.cpython-312.pyc
 cmds/__pycache__/help_commands.cpython-312.pyc
 cogs/__pycache__/model_select.cpython-312.pyc
 config copy.json
+cogs/__pycache__/sys_prompts.cpython-312.pyc

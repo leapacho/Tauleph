@@ -7,6 +7,7 @@ class DiscordObjectProcessor:
         self.bot_name: str = ""
         self.bot_user: discord.User = None
         self.message_content: str = ""
+        self.bot_member: discord.Member = None
 
         self.message: discord.Message = None
         self.guild: discord.Guild = None
@@ -27,8 +28,8 @@ class DiscordObjectProcessor:
         self.guild = discord_object.guild
         self.message_author = discord_object.author.display_name 
         self.bot_user = bot.user
-        bot_member = await self.guild.fetch_member(bot.user.id)
-        self.bot_name = bot_member.display_name
+        self.bot_member = await self.guild.fetch_member(bot.user.id)
+        self.bot_name = self.bot_member.display_name
         self.message_content = discord_object.content
         
         
@@ -38,5 +39,5 @@ class DiscordObjectProcessor:
         self.att_type = self.attachments[-1].content_type if self.attachments else ""
         self.att_url = self.attachments[-1].url if self.attachments else ""
         
-discord_obj_processor = DiscordObjectProcessor()
+discord_obj = DiscordObjectProcessor()
 

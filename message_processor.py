@@ -1,6 +1,5 @@
-from discord_obj_processor import discord_obj_processor
-from google import genai
-from google.genai import types
+from discord_obj_processor import discord_obj
+from config import config
 import requests
 
 
@@ -11,7 +10,7 @@ class MessageProcessor:
     Serves like the bridge between Discord and Groq's API.
     """
     def __init__(self):
-        pass
+        self.message_template = f"{discord_obj.message_author} sent a message. Respond to it in a conversational manner: {discord_obj.message_content}"
 
     async def process_message(self):
         """
@@ -44,7 +43,7 @@ class MessageProcessor:
             str: The result of the corresponding processing method.
         """
         for prefix, method in processing_methods.items():
-            if discord_obj_processor.att_type.startswith(prefix):
+            if discord_obj.att_type.startswith(prefix):
                 result = await method() # Calls the corresponding method.
                 return result
 
@@ -56,12 +55,12 @@ class MessageProcessor:
             str: The output of the LLM's processing of the image.
         """
 
-        async with discord_obj_processor.message.channel.typing():
+        async with discord_obj.message.channel.typing():
             image_output=([
-                {"type": "text", "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"},
-                {"type": "image_url", "image_url": discord_obj_processor.att_url}
+                {"type": "text", "text": self.message_template},
+                {"type": "image_url", "image_url": discord_obj.att_url}
                 ], 
-                "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
+                config.guild_sys_prompts[str(discord_obj.guild.id)])
         return image_output
 
     async def _process_audio(self):
@@ -71,13 +70,12 @@ class MessageProcessor:
         Returns:
             str: The output of the LLM's processing of the image.
         """
-        file = requests.get(discord_obj_processor.att_url)
+        file = requests.get(discord_obj.att_url)
 
-        async with discord_obj_processor.message.channel.typing():
-            speech_output=([{"type": "text", "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"},
-                            {"type": "media", "mime_type": discord_obj_processor.att_type, "data": file.content}],
-                            "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
-        # Note: The audio processing is not implemented yet.
+        async with discord_obj.message.channel.typing():
+            speech_output=([{"type": "text", "text": self.message_template},
+                            {"type": "media", "mime_type": discord_obj.att_type, "data": file.content}],
+                            config.guild_sys_prompts[str(discord_obj.guild.id)])
         return speech_output
 
     async def _process_text(self):
@@ -87,10 +85,10 @@ class MessageProcessor:
         Returns:
             str: The output of the LLM's processing of the text.
         """
-        async with discord_obj_processor.message.channel.typing():
+        async with discord_obj.message.channel.typing():
                 llm_output=([{
                     "type": "text",
-                    "text": f"{discord_obj_processor.message_author}: {discord_obj_processor.message_content}"
+                    "text": self.message_template
                 }], 
-                "You are a helpful AI called Tauleph participating in a conversation. Users' messages will be presented with their username followed by a colon (e.g., 'username: message'). Respond directly to the user's message in a conversational manner. **Your responses should contain only the message content itself. Do not start your response with 'tauleph:'.")
+                config.guild_sys_prompts[str(discord_obj.guild.id)]) # These lines made me rewrite the entirety of Tauleph one time.
         return llm_output
