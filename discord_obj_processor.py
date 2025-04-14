@@ -5,6 +5,7 @@ class DiscordObjectProcessor:
     def __init__(self):
         self.message_author: str = ""
         self.bot_name: str = ""
+        self.bot_user: discord.User = None
         self.message_content: str = ""
 
         self.message: discord.Message = None
@@ -25,6 +26,7 @@ class DiscordObjectProcessor:
         
         self.guild = discord_object.guild
         self.message_author = discord_object.author.display_name 
+        self.bot_user = bot.user
         bot_member = await self.guild.fetch_member(bot.user.id)
         self.bot_name = bot_member.display_name
         self.message_content = discord_object.content

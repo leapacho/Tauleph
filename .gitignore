@@ -4,3 +4,8 @@ __pycache__/graph.cpython-312.pyc
 __pycache__/main.cpython-312.pyc
 __pycache__/message_processor.cpython-312.pyc
 .env
+utils/__pycache__/validation.cpython-312.pyc
+__pycache__/config.cpython-312.pyc
+cmds/__pycache__/help_commands.cpython-312.pyc
+cogs/__pycache__/model_select.cpython-312.pyc
+config copy.json

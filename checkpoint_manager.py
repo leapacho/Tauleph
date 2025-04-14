@@ -1,15 +1,17 @@
 from langchain_core.messages import HumanMessage, SystemMessage
-from graph import run_graph, run_graph_mock, setup_graph
+from graph import run_graph, setup_graph
+from config import config
 
 class CheckpointManager:
     def __init__(self):
-        self.graph = setup_graph("gemini-2.0-flash")
+        self.graph = ""
         self.default_config = {"configurable": {"thread_id": "1"}}
 
     async def response(self, user_input=None, system_input=None):
         """
         Invokes the LLM for a response.
         """
+        self.graph = setup_graph(await config.current_model())
 
         #Prepare initial messages.
         user_message = HumanMessage(
