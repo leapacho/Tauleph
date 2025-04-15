@@ -57,6 +57,9 @@ class ModelSelectView(discord.ui.View):
         self.add_item(ModelSelect())
 
 class SelectModel(commands.Cog):
+    """
+    Command for letting users select their desired LLM model.
+    """
     def __init__(self, bot):
         self.bot = bot
 

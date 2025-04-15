@@ -2,11 +2,13 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from discord_obj_processor import discord_obj
-from typing import Optional
 
 from config import config
 
 class SysPrompts(commands.Cog):
+    """
+    Commands for modifying the system prompts of the bot.
+    """
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -17,7 +19,7 @@ class SysPrompts(commands.Cog):
 
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
-            sys_message (str): The new system message to set.
+            sys_message (str): Specify where to place the bot's name with "$name". e.g: "$name" will be turned into "Tauleph".
         """
         discord_obj.guild = interaction.guild
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
@@ -25,10 +27,10 @@ class SysPrompts(commands.Cog):
 
 
         if len(sys_message) < 2000:
-            await config.modify_sys_prompt(sys_message)
+            new_sys_prompt = await config.modify_sys_prompt(sys_message)
 
             await interaction.response.send_message(
-                f"System message has been changed to '{config.guild_sys_prompts[str(discord_obj.guild.id)]}'",
+                f"System message has been changed to '{new_sys_prompt}'",
                 ephemeral=False
             )
         else:
@@ -49,11 +51,11 @@ class SysPrompts(commands.Cog):
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
-        await config.create_sys_prompt_default()
+        current_sys_prompt = await config.initialize_system_prompt()
 
 
         await interaction.response.send_message(
-            f"The current system message is '{config.guild_sys_prompts[str(discord_obj.guild.id)]}'",
+            f"The current system message is '{current_sys_prompt}'",
             ephemeral=False
         )
 
@@ -70,10 +72,10 @@ class SysPrompts(commands.Cog):
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
-        await config.modify_sys_prompt(f"You are an AI assistant called {discord_obj.bot_name} in a Discord chat with multiple users.")
+        default_sys_prompt = await config.modify_sys_prompt(config.default_sys_prompt)
 
         await interaction.response.send_message(
-            f"The system message has been set to the default: '{config.guild_sys_prompts[str(discord_obj.guild.id)]}'",
+            f"The system message has been set to the default: '{default_sys_prompt}'",
             ephemeral=False
         )
 

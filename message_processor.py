@@ -11,6 +11,7 @@ class MessageProcessor:
     """
     def __init__(self):
         self.message_template = f"{discord_obj.message_author} sent a message. Respond to it in a conversational manner: {discord_obj.message_content}"
+        self.sys_prompt = config.initialize_system_prompt()
 
     async def process_message(self):
         """
@@ -28,10 +29,6 @@ class MessageProcessor:
 
         result = await self._determine_message_type(processing_methods)
         return result
-        #await ui_msg_handler.send_llm_output(result, self.message) # Separate concerns:
-                                                                   # Make this method return its value and
-                                                                   # orchestrate the UI handling elsewhere.
-
 
     async def _determine_message_type(self, processing_methods: dict) -> str:
         """
@@ -60,7 +57,7 @@ class MessageProcessor:
                 {"type": "text", "text": self.message_template},
                 {"type": "image_url", "image_url": discord_obj.att_url}
                 ], 
-                config.guild_sys_prompts[str(discord_obj.guild.id)])
+                self.sys_prompt)
         return image_output
 
     async def _process_audio(self):
@@ -75,7 +72,7 @@ class MessageProcessor:
         async with discord_obj.message.channel.typing():
             speech_output=([{"type": "text", "text": self.message_template},
                             {"type": "media", "mime_type": discord_obj.att_type, "data": file.content}],
-                            config.guild_sys_prompts[str(discord_obj.guild.id)])
+                            self.sys_prompt)
         return speech_output
 
     async def _process_text(self):
@@ -90,5 +87,5 @@ class MessageProcessor:
                     "type": "text",
                     "text": self.message_template
                 }], 
-                config.guild_sys_prompts[str(discord_obj.guild.id)]) # These lines made me rewrite the entirety of Tauleph one time.
+                self.sys_prompt) # These lines made me rewrite the entirety of Tauleph one time.
         return llm_output

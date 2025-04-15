@@ -8,6 +8,7 @@ class DiscordObjectProcessor:
         self.bot_user: discord.User = None
         self.message_content: str = ""
         self.bot_member: discord.Member = None
+        self.text_channel: discord.TextChannel = None
 
         self.message: discord.Message = None
         self.guild: discord.Guild = None
@@ -31,9 +32,11 @@ class DiscordObjectProcessor:
         self.bot_member = await self.guild.fetch_member(bot.user.id)
         self.bot_name = self.bot_member.display_name
         self.message_content = discord_object.content
+
         
         
         self.message = discord_object
+        self.text_channel = self.message.channel
         
         self.attachments = discord_object.attachments
         self.att_type = self.attachments[-1].content_type if self.attachments else ""

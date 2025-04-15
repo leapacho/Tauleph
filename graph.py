@@ -61,8 +61,7 @@ def setup_graph(input_model: str):
         """
         message = state["messages"][-1].content
         state["messages"][-1] = AIMessage(content=[message]) # Convert the message into a list.
-        return state # Or return {"messages": state['messages'], ...} etc.
-    
+        return state 
 
     graph_builder.add_node("chatbot", chatbot) #Adds the chatbot node to the graph.
     graph_builder.add_node("tools", ToolNode(tools)) #Adds the tools node to the graph.

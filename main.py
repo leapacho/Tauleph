@@ -24,8 +24,9 @@ async def on_ready():
     await bot.load_extension("cmds.help_commands")
     await bot.load_extension("cogs.model_select")
     await bot.load_extension("cogs.sys_prompts")
+    await bot.load_extension("cogs.channel_permissions")
 
-    await bot.tree.sync()
+    await bot.tree.sync()   
 
 @bot.event
 async def on_message(message: discord.Message):

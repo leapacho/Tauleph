@@ -12,6 +12,8 @@ class Config:
 
         self.load_config()
 
+        self.default_sys_prompt = f"You are an AI assistant in a Discord chat with multiple users."
+
     def load_config(self):
         # List the attribute names that need configuration.
         for attr in ["guild_models", "guild_sys_prompts", "guild_allowed_channels_id", "model_list", "help_commands"]:
@@ -74,44 +76,70 @@ class Config:
     
     # Methods for system messages.
     
-    async def modify_sys_prompt(self, sys_prompt: str) -> dict:
+    async def modify_sys_prompt(self, sys_prompt: str) -> None:
         """
         Modifies the system prompt given the system prompt and the guild.
 
         Args:
             sys_prompt (str): The new system prompt to replace the old one with.
-            guild (discord.Guild): Guild object.
-        Returns:
-            str: The new system prompt.
         """
         key = str(discord_obj.guild.id)
 
         self.guild_sys_prompts[key] = sys_prompt
         await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
-        await self.create_sys_prompt_default()
+        return await self.initialize_system_prompt()
 
 
-    async def create_sys_prompt_default(self) -> str:
+    async def initialize_system_prompt(self) -> None:
         """
-        Creates a system prompt given the guild object if it doesn't already exist.
-
-        Args:
-            guild (discord.Guild): Guild object.
-        Returns:
-            str: The default system prompt. 
+        Creates a system prompt given the guild object if it doesn't already exist and updates it if it already exists.
         """
         key = str(discord_obj.guild.id)
-
         # Check if the key is in the system prompts dictionary
         if not key in self.guild_sys_prompts:
-            self.guild_sys_prompts[key] = f"You are an AI assistant called {discord_obj.bot_name} in a Discord chat with multiple users." # If it isn't, then create a new one with the default message.
-            await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
+            self.guild_sys_prompts[key] = self.default_sys_prompt # If it isn't, then create a new one with the default message.
+            await self.save_config("guild_sys_prompts", self.guild_sys_prompts) #Fix the name thing that adds the name but it already has the name
+
         # Check if the name is in the system prompt
-        print(discord_obj.bot_name.lower())
-        print(self.guild_sys_prompts[key].lower())
-        if not discord_obj.bot_name.lower() in self.guild_sys_prompts[key].lower():
-            self.guild_sys_prompts[key] += f" Your name is {discord_obj.bot_name}." # If it isn't, then add the bot's name into it
-            await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
+        if not "$name" in self.guild_sys_prompts[key]:
+            self.guild_sys_prompts[key] =  f"{self.guild_sys_prompts[key]} Your name is $name"
+
+        formatted_sys_prompt: str = self.guild_sys_prompts[key].replace("$name", discord_obj.bot_name)
+        return formatted_sys_prompt
+
+    # Channel permission methods.
+
+    async def allow_channel(self) -> None:
+        """
+        Adds a channel to the list of allowed channels.
+        """
+        key = str(discord_obj.guild.id)
+        if key in self.guild_allowed_channels_id:
+            if discord_obj.text_channel.id not in self.guild_allowed_channels_id[key]:
+                self.guild_allowed_channels_id[key].append(discord_obj.text_channel.id)
+                await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
+        else:
+            self.guild_allowed_channels_id[key] = [discord_obj.text_channel.id]
+            await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
+
+    async def disallow_channel(self) -> bool:
+        """
+        Removes a channel to the list of allowed channels.
+
+        Returns:
+            bool: Returns True if the operation was successful and False it it wasn't.
+        """
+        key = str(discord_obj.guild.id)
+        try: # Try to remove the channel from the list of allowed channels.
+            self.guild_allowed_channels_id[key].remove(discord_obj.text_channel.id) # Will except if no channels with that ID exist.
+            if len(self.guild_allowed_channels_id[key]) - 1 < 0: # If the length of the list inside the dictionary is less than 0...
+                del self.guild_allowed_channels_id[key] #... remove the dictionary entirely. This means that if the dictionary has no items in its list it will be removed.
+            await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
+            return True
+        except ValueError:
+            return False
+
+
 
 
 config = Config()
