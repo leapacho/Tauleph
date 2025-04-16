@@ -52,7 +52,7 @@ class Config:
             self.guild_models[key] = "gemini-2.0-flash-lite"
             await self.save_config("guild_models", self.guild_models)
 
-    async def save_selected_model(self, model: str, guild: discord.Guild):
+    async def save_selected_model(self, model: str):
         """
         Saves the model of the bot given the guild object and refreshes the message manager
         with the same model.
@@ -63,7 +63,7 @@ class Config:
         """
         await self.create_model_default()
 
-        key = str(guild.id)
+        key = str(discord_obj.guild.id)
         self.guild_models[key] = model  
         await self.save_config("guild_models", self.guild_models)
 
@@ -98,11 +98,12 @@ class Config:
         # Check if the key is in the system prompts dictionary
         if not key in self.guild_sys_prompts:
             self.guild_sys_prompts[key] = self.default_sys_prompt # If it isn't, then create a new one with the default message.
-            await self.save_config("guild_sys_prompts", self.guild_sys_prompts) #Fix the name thing that adds the name but it already has the name
+            await self.save_config("guild_sys_prompts", self.guild_sys_prompts) 
 
         # Check if the name is in the system prompt
         if not "$name" in self.guild_sys_prompts[key]:
             self.guild_sys_prompts[key] =  f"{self.guild_sys_prompts[key]} Your name is $name"
+            await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
 
         formatted_sys_prompt: str = self.guild_sys_prompts[key].replace("$name", discord_obj.bot_name)
         return formatted_sys_prompt
@@ -139,8 +140,4 @@ class Config:
         except ValueError:
             return False
 
-
-
-
 config = Config()
-    

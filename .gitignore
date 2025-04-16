@@ -12,3 +12,10 @@ config copy.json
 cogs/__pycache__/sys_prompts.cpython-312.pyc
 __pycache__/entry_point.cpython-312.pyc
 cogs/__pycache__/channel_permissions.cpython-312.pyc
+__pycache__/entry_point.cpython-312.pyc
+__pycache__/discord_ui_handler.cpython-312.pyc
+__pycache__/entry_point.cpython-312.pyc
+__pycache__/graph_manager.cpython-312.pyc
+cogs/__pycache__/discord_ui_handler.cpython-312.pyc
+utils/__pycache__/split_chunks.cpython-312.pyc
+__pycache__/entry_point.cpython-312.pyc

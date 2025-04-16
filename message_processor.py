@@ -1,4 +1,5 @@
 from discord_obj_processor import discord_obj
+from discord_ui_handler import discord_ui_handler, RegenButtons
 from config import config
 import requests
 
@@ -11,14 +12,16 @@ class MessageProcessor:
     """
     def __init__(self):
         self.message_template = f"{discord_obj.message_author} sent a message. Respond to it in a conversational manner: {discord_obj.message_content}"
-        self.sys_prompt = config.initialize_system_prompt()
+        self.sys_prompt = ""
 
-    async def process_message(self):
+    async def process_message(self) -> str:
         """
         Processes the given message. 
 
         Can process images, audio and text, and then sends the output.
         """
+
+        self.sys_prompt = await config.initialize_system_prompt()
 
         processing_methods={ # This dictionary allows for easy implementation of other processing methods.
             "image": self._process_image,
@@ -44,7 +47,7 @@ class MessageProcessor:
                 result = await method() # Calls the corresponding method.
                 return result
 
-    async def _process_image(self):
+    async def _process_image(self) -> str:
         """
         Processes the image.
 
@@ -60,7 +63,7 @@ class MessageProcessor:
                 self.sys_prompt)
         return image_output
 
-    async def _process_audio(self):
+    async def _process_audio(self) -> str:
         """
         Processes the audio.
 
@@ -75,7 +78,7 @@ class MessageProcessor:
                             self.sys_prompt)
         return speech_output
 
-    async def _process_text(self):
+    async def _process_text(self) -> str:
         """
         Processes the text given.
 

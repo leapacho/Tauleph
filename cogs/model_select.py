@@ -35,12 +35,12 @@ class ModelSelect(discord.ui.Select):
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
         selected_model = self.values[0]
-        guild: discord.Guild = interaction.message.guild
+        
         await interaction.response.send_message(
             f"Selected model: **{selected_model}**",
             ephemeral=False
         )
-        await config.save_selected_model(selected_model, guild)
+        await config.save_selected_model(selected_model)
         await interaction.message.delete()
 
 

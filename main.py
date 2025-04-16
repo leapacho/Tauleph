@@ -7,7 +7,6 @@ from discord_obj_processor import discord_obj
 from entry_point import entry_point
 from utils.validation import validate_message
 
-
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -33,7 +32,6 @@ async def on_message(message: discord.Message):
     await discord_obj.update_object_variables(message, bot)
     if not await validate_message(message):
         return
-    llm_message = await entry_point()
-    for chunk in llm_message: await message.channel.send(chunk)
+    await entry_point()
 
 bot.run(os.environ.get("BOT_API_KEY"))

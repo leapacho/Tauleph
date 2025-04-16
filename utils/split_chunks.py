@@ -1,6 +1,6 @@
 from textwrap import TextWrapper
 
-def split_text_into_chunks(text: str, chunk_size: int) -> list:
+def split_text(text: str, chunk_size: int) -> list:
     """
         Converts the input text into a list to then split it in chunks of the specified size in characters.\n
         
