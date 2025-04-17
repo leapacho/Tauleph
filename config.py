@@ -110,29 +110,33 @@ class Config:
 
     # Channel permission methods.
 
-    async def allow_channel(self) -> None:
+    async def allow_channel(self, channel: discord.TextChannel=None) -> None:
         """
         Adds a channel to the list of allowed channels.
         """
-        key = str(discord_obj.guild.id)
+        
+        key = str(channel.guild.id)
+     
         if key in self.guild_allowed_channels_id:
-            if discord_obj.text_channel.id not in self.guild_allowed_channels_id[key]:
-                self.guild_allowed_channels_id[key].append(discord_obj.text_channel.id)
+            if channel.id not in self.guild_allowed_channels_id[key]:
+                self.guild_allowed_channels_id[key].append(channel.id)
                 await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
         else:
-            self.guild_allowed_channels_id[key] = [discord_obj.text_channel.id]
+            self.guild_allowed_channels_id[key] = [channel.id]
             await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
 
-    async def disallow_channel(self) -> bool:
+    async def disallow_channel(self, channel: discord.TextChannel=None) -> bool:
         """
         Removes a channel to the list of allowed channels.
 
         Returns:
             bool: Returns True if the operation was successful and False it it wasn't.
         """
-        key = str(discord_obj.guild.id)
+    
+        key = str(channel.guild.id)
+
         try: # Try to remove the channel from the list of allowed channels.
-            self.guild_allowed_channels_id[key].remove(discord_obj.text_channel.id) # Will except if no channels with that ID exist.
+            self.guild_allowed_channels_id[key].remove(channel.id) # Will except if no channels with that ID exist.
             if len(self.guild_allowed_channels_id[key]) - 1 < 0: # If the length of the list inside the dictionary is less than 0...
                 del self.guild_allowed_channels_id[key] #... remove the dictionary entirely. This means that if the dictionary has no items in its list it will be removed.
             await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)

@@ -1,6 +1,7 @@
 from message_processor import MessageProcessor
 from checkpoint_manager import CheckpointManager
 from discord_ui_handler import discord_ui_handler, RegenButtons
+from discord_obj_processor import discord_obj
 
 
 checkpoint_manager = CheckpointManager()
@@ -13,11 +14,13 @@ async def entry_point():
     This function is called to start the message processing flow.
     """
 
-    # Process the message.
+    # Initiate variables.
     discord_ui_handler.regen_buttons = RegenButtons()
     await discord_ui_handler._prepare_new_responses()
+    await checkpoint_manager.update_thread_id(discord_obj.guild.id)
     
     
+    # Process the message.
     message_processor = MessageProcessor()
     result = await message_processor.process_message()
 

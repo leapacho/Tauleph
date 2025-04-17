@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from typing import Union
 
 class DiscordObjectProcessor:
     def __init__(self):
@@ -20,7 +19,7 @@ class DiscordObjectProcessor:
         self.att_url: str = ""
         self.is_interaction: bool = False
 
-    async def update_object_variables(self, discord_object: Union[discord.Interaction, discord.Message], bot: commands.Bot):
+    async def update_object_variables(self, discord_object: discord.Message, bot: commands.Bot):
         """
         Stores every needed variable from the discord object.
 

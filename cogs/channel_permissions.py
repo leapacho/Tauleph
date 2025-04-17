@@ -23,12 +23,11 @@ class ChannelPermissions(commands.Cog):
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
         discord_obj.guild = interaction.guild
-        discord_obj.text_channel = interaction.channel
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
 
-        await config.allow_channel()
+        await config.allow_channel(interaction.channel)
         await interaction.response.send_message(
             f"{discord_obj.bot_name} will now interact in this channel.",
             ephemeral=False
@@ -43,12 +42,11 @@ class ChannelPermissions(commands.Cog):
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
         discord_obj.guild = interaction.guild
-        discord_obj.text_channel = interaction.channel
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
 
-        if await config.disallow_channel():
+        if await config.disallow_channel(interaction.guild):
             await interaction.response.send_message(
             f"{discord_obj.bot_name} will no longer interact in this channel.",
             ephemeral=False

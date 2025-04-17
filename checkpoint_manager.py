@@ -55,6 +55,14 @@ class CheckpointManager:
         self.current_index+=1
         msg = (await memory.aget(self.current_config))["channel_values"]["messages"][-1].content
         return msg
+    
+    async def update_thread_id(self, thread_id: int):
+        """
+        Updates the thread ID with the provided one.
+        """
+        self.default_config["configurable"]["thread_id"]=thread_id #Accesses the configurable key in the config dictionary and sets the thread_id to the provided one.
+        if self.current_config: #If there is a current config...
+            self.current_config["configurable"]["thread_id"]=thread_id #...sets the thread_id in the current config to the provided one.
 
     @property
     def current_config(self):
