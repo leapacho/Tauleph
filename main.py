@@ -31,6 +31,9 @@ async def on_guild_join(guild: discord.Guild):
             return
         except discord.Forbidden: # discord.Forbidden is an exception. It's raised when the bot tries to send a message to a channel
             continue              # it isn't allowed to send messages in.
+@bot.event
+async def on_guild_remove(guild: discord.Guild):
+    await config.clear_guild_vars(guild)
 
 @bot.event
 async def on_ready():
