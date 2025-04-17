@@ -141,7 +141,21 @@ class Config:
                 del self.guild_allowed_channels_id[key] #... remove the dictionary entirely. This means that if the dictionary has no items in its list it will be removed.
             await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
             return True
-        except ValueError:
+        except (ValueError, KeyError):
             return False
+        
+    async def clear_guild_vars(self, guild: discord.Guild) -> None:
+        """
+        Clear the guild's every stored variable from the config.
+        """
+        key = str(guild.id)
+        del self.guild_allowed_channels_id[key]
+        del self.guild_models[key]
+        del self.guild_sys_prompts[key]
+        await self.save_config("guild_allowed_channels_id", self.guild_allowed_channels_id)
+        await self.save_config("guild_models", self.guild_models)
+        await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
+
+
 
 config = Config()

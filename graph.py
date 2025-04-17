@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+from google.api_core.exceptions import GoogleAPIError
 #from langchain_groq import ChatGroq
 from langchain_core.messages import AIMessage
 from typing import Annotated, Union
@@ -29,7 +30,9 @@ class State(TypedDict):
 def setup_graph(input_model: str) -> CompiledGraph:
     graph_builder = StateGraph(State) #StateGraph is a class that creates a graph with the state.
 
-    llm = ChatGoogleGenerativeAI(model=input_model)
+    llm = ChatGoogleGenerativeAI(model=input_model,
+                                 max_retries=6,
+                                 timeout=2)
     tools = [searx_tool]
      
     llm_with_tools = llm.bind_tools(tools)
@@ -71,8 +74,11 @@ async def run_graph(graph: CompiledGraph, config, initial_messages=None) -> str:
     """
     Processes the input messages through the graph and returns the last message.
     """
-
-    response = await graph.ainvoke({"messages": initial_messages}, config) if initial_messages else await graph.ainvoke(None, config) 
+    try:
+        response = await graph.ainvoke({"messages": initial_messages}, config) if initial_messages else await graph.ainvoke(None, config) 
+    except GoogleAPIError as e:
+        response = f"Error: \n\n{e}\n\nContact Discord user 'limonero.' or start an issue on Tauleph's GitHub page if this is a recurring error."
+        return [response]
 
     return response["messages"][-1].content
 
