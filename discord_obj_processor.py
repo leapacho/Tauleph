@@ -17,7 +17,6 @@ class DiscordObjectProcessor:
         self.attachments: discord.Message = ""
         self.att_type: str = ""
         self.att_url: str = ""
-        self.is_interaction: bool = False
 
     async def update_object_variables(self, discord_object: discord.Message, bot: commands.Bot):
         """
@@ -26,7 +25,6 @@ class DiscordObjectProcessor:
         Args:
             discord_object (Union[discord.Interaction, discord.Message]): The Discord object to take as reference.
             bot (commands.Bot): The bot instance.
-            is_interaction (bool): Whether to process the message as an interaction or not (unused).
         """
 
 

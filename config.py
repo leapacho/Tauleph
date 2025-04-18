@@ -1,5 +1,6 @@
 import json
 import discord
+import asyncio
 from discord_obj_processor import discord_obj
 
 class Config:
@@ -9,6 +10,7 @@ class Config:
         self.guild_allowed_channels_id = {}
         self.model_list = {}
         self.help_commands = {}
+        self._save_lock = asyncio.Lock()
 
         self.load_config()
 
@@ -31,14 +33,15 @@ class Config:
             attr (str): The name of the attribute to save.
             data (dict): The data to save in the JSON file.
         """
-        with open(f"config.json", "r") as file:
-            config_file = json.load(file)
-            
-            config_file[f"{attr}"] = data
+        async with self._save_lock: 
+            with open(f"config.json", "r") as file:
+                config_file = json.load(file)
+                
+                config_file[f"{attr}"] = data
 
 
-        with open(f"config.json", "w") as file:
-            json.dump(config_file, file, indent=4)
+            with open(f"config.json", "w") as file:
+                json.dump(config_file, file, indent=4)
 
     # Methods for models.
         
