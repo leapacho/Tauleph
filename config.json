@@ -4,14 +4,12 @@
     },
     "guild_sys_prompts": {
         "guild_id": "sys_prompt_string"
+        
     },
     "guild_allowed_channels_id": {
         "guild_id": [
             123,
             321
-        ],
-        "1037799249653542942": [
-            1335791471663779950
         ]
     },
     "model_list": [
@@ -30,7 +28,7 @@
     ],
     "help_commands": {
         "quickstart": "#  Quickstart\nTo start using Tauleph, first, set the channels in which you want it to respond in. Use `/channel_allow` in the channel you want it to speak in and `/channel_disallow` to disallow Tauleph from speaking there. To invoke Tauleph, simply type Tauleph's name along with your message. For example: 'Tauleph, what is the current time in Utah?' You can also reply to Tauleph's messages and it will respond without having to spell its name out.\n\nFor more commands or functionality, see `/help commands` or `/help functionality`.",
-        "commands": "#  Commands\n##  `/select_model:`\nThis command is used to switch the LLM's model. Currently, there are 15 available models, all which are useful for different purposes.\n##  `/change_system_message:`\nThis command allows you to change the LLM's system message, AKA, its instructions. For example, you can set the system message to 'You are an angsty teen.' and the LLM will try its best to mimic an angsty teen. As of now, if you don't include Tauleph's server nickname in the system message, 'Your name is [insert nickname here]' will be added at the end of it. This feature is case sensitive.\n##  `/current_system_message:`\nThis command will send a message containing the current system message.\n##  `/channel_allow:`\nThis command adds the current channel to the list of channels in which Tauleph can respond.\n##  `/channel_disallow:`\n This command removes the current channel from the list of channels in which Tauleph can respond.\n##  `/help functionality:`\nSee what other functionality Tauleph has.",
+        "commands": "#  Commands\n##  `/select_model:`\nThis command is used to switch the LLM's model. Currently, there are 15 available models, all which are useful for different purposes.\n##  `/change_system_message:`\nThis command allows you to change the LLM's system message, AKA, its instructions. For example, you can set the system message to 'You are an angsty teen.' and the LLM will try its best to mimic an angsty teen. As of now, if you don't include Tauleph's server nickname in the system message, 'Your name is [insert nickname here]' will be added at the end of it. This feature is case sensitive.\n##  `/current_system_message:`\nThis command will send a message containing the current system message.\n##  `/allow_channel:`\nThis command adds the current channel to the list of channels in which Tauleph can respond.\n##  `/disallow_channel:`\n This command removes the current channel from the list of channels in which Tauleph can respond.\n## `/restore_system_message:`\nThis command allows you to restore the system message to its default. Use this in cases where the bot is responding strangely or if you've accidentally changed the system message.\n## `/clear_memory:`\nThis clears Tauleph's chat history, or its memory, permanently. You cannot undo this command. Use with caution.\n##`/set_settings_to_default:`\nThis command sets all of Tauleph's configurable settings to their respective defaults.  \n##  `/help functionality:`\nSee what other functionality Tauleph has.",
         "functionality": "#  Functionality\n##  Regeneration:\nTo regenerate Tauleph's messages, you can click to one of the following buttons. The repeat button (\ud83d\udd01) makes a new regeneration, while the arrow buttons (\u2b05\u27a1\ufe0f) allow you to navigate between previous regenerations.\n##  Invoking:\nTo invoke Tauleph, you can do one of two things: type its name in your message or reply to one of Tauleph's messages. Example: 'Tauleph, what is Eggs Benedict?' You don't have to include Tauleph's name in your message if you reply to one of its messages.\n##  Changing Tauleph's name:\nYou can customize the name it responds to by simply changing Tauleph's server nickname to your liking.\n##  Audio and images:\nTauleph can see and hear any images or audio you send it. Just invoke it like you normally would, and it will reply accordingly. You can also speak to it using voice messages by first replying to one of its messages and then sending the voice message. It currently does not support gifs or videos of any kind.\n##  Web search:\nTauleph can autonomously search the internet using a search engine. This extends its knowledge and usefulness. An example of how useful this is to query it about a recent event, and you'll see it respond with accurate, up-to-date information."
     }
 }
