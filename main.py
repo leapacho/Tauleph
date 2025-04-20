@@ -33,7 +33,7 @@ async def on_guild_join(guild: discord.Guild):
             continue              # it isn't allowed to send messages in.
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
-    await config.clear_guild_vars(guild)
+    await config.set_guild_vars_default(guild)
 
 @bot.event
 async def on_ready():
@@ -44,6 +44,7 @@ async def on_ready():
     await bot.load_extension("cogs.model_select")
     await bot.load_extension("cogs.sys_prompts")
     await bot.load_extension("cogs.channel_permissions")
+    await bot.load_extension("cogs.set_guild_defaults")
 
     await bot.tree.sync()   
 

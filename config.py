@@ -15,6 +15,7 @@ class Config:
         self.load_config()
 
         self.default_sys_prompt = f"You are an AI assistant in a Discord chat with multiple users."
+        self.default_model = "gemini-2.0-flash-lite"
 
     def load_config(self):
         # List the attribute names that need configuration.
@@ -36,10 +37,7 @@ class Config:
         async with self._save_lock: 
             with open(f"config.json", "r") as file:
                 config_file = json.load(file)
-                
                 config_file[f"{attr}"] = data
-
-
             with open(f"config.json", "w") as file:
                 json.dump(config_file, file, indent=4)
 
@@ -147,7 +145,7 @@ class Config:
         except (ValueError, KeyError):
             return False
         
-    async def clear_guild_vars(self, guild: discord.Guild) -> None:
+    async def set_guild_vars_default(self, guild: discord.Guild) -> None:
         """
         Clear the guild's every stored variable from the config.
         """
@@ -159,6 +157,25 @@ class Config:
         await self.save_config("guild_models", self.guild_models)
         await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
 
+    async def set_guild_vars_default(self, guild: discord.Guild) -> None:
+            """
+            Set the guild's every stored variable from the config to defaults.
+            """
+            key = str(guild.id)
+            self.guild_models[key] = self.default_model
+            self.guild_sys_prompts[key] = self.default_sys_prompt
+
+            await self.save_config("guild_models", self.guild_models)
+            await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
+
+    def get_conversation_thread_id(self, interaction: discord.Interaction) -> str:
+         if interaction.guild:
+             # For guild channels, use guild ID + channel ID string
+             # Use interaction.guild_id and interaction.channel_id which are directly available
+             return f"{interaction.guild_id}-{interaction.channel_id}"
+         else:
+             # For DMs, just use the channel ID string
+             return str(interaction.channel_id)
 
 
 config = Config()

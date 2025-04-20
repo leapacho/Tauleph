@@ -29,7 +29,6 @@ async def ai_config_history(graph: CompiledGraph, config: dict) -> list:
     configs_unreversed=[]
     
     async for state in state_history:
-        print(state.values["messages"])
         messages = state.values.get("messages", [])
         if messages:
             last_message=messages[-1] #Gets the last message in the messages.

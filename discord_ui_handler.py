@@ -12,8 +12,9 @@ class DiscordUIHandler():
         self.newest_messages: list = []
         
     async def send_message_regen(self, message: list):
-        await self._delete_previous_messages()
+        
         if len(message) > 1:
+            await self._delete_previous_messages()
             for i, chunk in enumerate(message):
                 is_last_chunk = i == (len(message)-1)
                 view = self.regen_buttons if is_last_chunk else None
@@ -22,28 +23,24 @@ class DiscordUIHandler():
         else:
             view = self.regen_buttons
             newest_llm_message = await self.newest_messages[-1].edit(content=message[-1], view=view)
-            self.newest_messages.append(newest_llm_message)    
+            self.newest_messages = [newest_llm_message]
+            
+
 
     async def send_message(self, message: list):
         """
         Sends the given string to Discord.
         """
-
+        new_messages = []
+        await self._clear_previous_view()
         for i, chunk in enumerate(message):
+
             is_last_chunk = i == (len(message)-1)
             view = self.regen_buttons if is_last_chunk else None
             newest_llm_message = await discord_obj.text_channel.send(chunk, view=view)
-            self.newest_messages.append(newest_llm_message)
-        
-    async def _prepare_new_responses(self):
-        """
-        Prepares the UI state for new messages by clearing previous states.
+            new_messages.append(newest_llm_message)
+        self.newest_messages = new_messages
 
-        This includes clearing the newest messages, previous views, and deleting previous messages if necessary.
-        """
-
-        await self._clear_newest_messages()
-        await self._clear_previous_view()
 
     async def _delete_previous_messages(self):
         """
@@ -54,18 +51,11 @@ class DiscordUIHandler():
                     await message.delete()
             self.newest_messages=[]
 
-    async def _clear_newest_messages(self):
-        """
-        Updates the newest messages list to only include the last message if there are multiple messages.
-        """
-        if len(self.newest_messages) > 1:
-            self.newest_messages=[self.newest_messages[-1]]
-        
     async def _clear_previous_view(self):
         """
         Removes the view (buttons) from the last message in the newest messages list.
         """
-        if self.newest_messages:
+        if len(self.newest_messages) != 0:
             await self.newest_messages[-1].edit(view=None)
 
 discord_ui_handler = DiscordUIHandler() 
