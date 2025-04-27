@@ -1,7 +1,7 @@
-from discord_obj_processor import discord_obj
+from bot.discord_obj_processor import discord_obj
 import discord
 
-from config import config
+from config.config import config
 
 async def validate_message(message: discord.Message) -> bool:
     """

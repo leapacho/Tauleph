@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from config import config
-from discord_obj_processor import discord_obj
+from config.config import config
+from bot.discord_obj_processor import discord_obj
 
 
 class ModelSelect(discord.ui.Select):

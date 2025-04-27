@@ -1,5 +1,5 @@
-from discord_obj_processor import discord_obj
-from config import config
+from bot.discord_obj_processor import discord_obj
+from config.config import config
 from google import genai
 from io import BytesIO
 from concurrent.futures import ThreadPoolExecutor
@@ -9,8 +9,6 @@ import aiohttp
 import asyncio
 import tempfile
 import os
-import requests
-
 
 class MessageProcessor:
     """
@@ -202,11 +200,9 @@ class MessageProcessor:
             ff = ffmpy.FFmpeg(
                 inputs={temp_input_path: "-f gif"},
                 outputs={temp_output_path: '-y'}
-            )
-            
+            )            
             # Execute the conversion
             ff.run()
-
 
             with open(temp_output_path, "rb") as file:
                 output_bytes = file.read()
@@ -238,5 +234,3 @@ class MessageProcessor:
             lambda: client.files.get(name=myfile.name)
         )
         return myfile
-
-        

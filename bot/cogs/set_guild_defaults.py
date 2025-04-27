@@ -2,10 +2,10 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from config import config
-from discord_obj_processor import discord_obj
-from graph import graph
-from checkpoint_manager import checkpoint_manager
+from config.config import config
+from bot.discord_obj_processor import discord_obj
+from llm_graph.graph import graph
+from llm_graph.checkpoint_manager import checkpoint_manager
 
 class SetGuildDefault(commands.Cog):
     """

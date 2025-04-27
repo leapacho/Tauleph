@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord_obj_processor import discord_obj
+from bot.discord_obj_processor import discord_obj
 
-from config import config
+from config.config import config
 
 class SysPrompts(commands.Cog):
     """

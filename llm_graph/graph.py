@@ -17,9 +17,6 @@ from langchain_core.messages import trim_messages
 from langgraph.checkpoint.memory import InMemorySaver
 from dotenv import load_dotenv
 from utils.split_chunks import split_text
-from config import config
-import asyncio
-
 load_dotenv() #Loads environment variables.
 # conn = sqlite3.connect("checkpoints.sqlite", check_same_thread=False)
 searx_search = SearxSearchWrapper(searx_host="http://localhost:32787") #SearxSearchWrapper is a class that allows you to interact with the Searx API.

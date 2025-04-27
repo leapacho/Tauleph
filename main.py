@@ -3,10 +3,10 @@ import os
 
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord_obj_processor import discord_obj
+from bot.discord_obj_processor import discord_obj
 from entry_point import entry_point
 from utils.validation import validate_message
-from config import config
+from config.config import config
 
 load_dotenv()
 
@@ -33,18 +33,18 @@ async def on_guild_join(guild: discord.Guild):
             continue              # it isn't allowed to send messages in.
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
-    await config.set_guild_vars_default(guild)
+    await config.delete_guild_vars(guild)
 
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name} - {bot.user.id}')
     print('------')
 
-    await bot.load_extension("cmds.help_commands")
-    await bot.load_extension("cogs.model_select")
-    await bot.load_extension("cogs.sys_prompts")
-    await bot.load_extension("cogs.channel_permissions")
-    await bot.load_extension("cogs.set_guild_defaults")
+    await bot.load_extension("bot.cmds.help_commands")
+    await bot.load_extension("bot.cogs.model_select")
+    await bot.load_extension("bot.cogs.sys_prompts")
+    await bot.load_extension("bot.cogs.channel_permissions")
+    await bot.load_extension("bot.cogs.set_guild_defaults")
 
     await bot.tree.sync()   
 

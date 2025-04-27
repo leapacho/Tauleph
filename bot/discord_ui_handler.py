@@ -1,6 +1,6 @@
 import discord
-from discord_obj_processor import discord_obj
-from checkpoint_manager import checkpoint_manager
+from bot.discord_obj_processor import discord_obj
+from llm_graph.checkpoint_manager import checkpoint_manager
 
 
 class DiscordUIHandler():

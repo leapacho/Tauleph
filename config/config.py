@@ -1,7 +1,7 @@
 import json
 import discord
 import asyncio
-from discord_obj_processor import discord_obj
+from bot.discord_obj_processor import discord_obj
 
 class Config:
     def __init__(self):
@@ -20,7 +20,7 @@ class Config:
     def load_config(self):
         # List the attribute names that need configuration.
         for attr in ["guild_models", "guild_sys_prompts", "guild_allowed_channels_id", "model_list", "help_commands"]:
-            with open(f"config.json", "r") as file:
+            with open(f"config/config.json", "r") as file:
                 data=json.load(file)
                 loaded_data=data[attr]
             # Update the attribute on the instance. 
@@ -35,10 +35,10 @@ class Config:
             data (dict): The data to save in the JSON file.
         """
         async with self._save_lock: 
-            with open(f"config.json", "r") as file:
+            with open(f"config/config.json", "r") as file:
                 config_file = json.load(file)
                 config_file[f"{attr}"] = data
-            with open(f"config.json", "w") as file:
+            with open(f"config/config.json", "w") as file:
                 json.dump(config_file, file, indent=4)
 
     # Methods for models.
@@ -145,9 +145,9 @@ class Config:
         except (ValueError, KeyError):
             return False
         
-    async def set_guild_vars_default(self, guild: discord.Guild) -> None:
+    async def delete_guild_vars(self, guild: discord.Guild) -> None:
         """
-        Clear the guild's every stored variable from the config.
+        Delete the guild's every stored variable from the config.
         """
         key = str(guild.id)
         del self.guild_allowed_channels_id[key]

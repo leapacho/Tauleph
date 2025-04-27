@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from config import config
+from config.config import config
 
 class HelpCommandsGroup(app_commands.Group):
     

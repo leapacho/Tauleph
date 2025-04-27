@@ -1,7 +1,7 @@
-from message_processor import MessageProcessor
-from checkpoint_manager import checkpoint_manager
-from discord_ui_handler import discord_ui_handler, RegenButtons
-from discord_obj_processor import discord_obj
+from llm_graph.message_processor import MessageProcessor
+from llm_graph.checkpoint_manager import checkpoint_manager
+from bot.discord_ui_handler import discord_ui_handler, RegenButtons
+from bot.discord_obj_processor import discord_obj
 
 
 

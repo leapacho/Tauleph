@@ -1,8 +1,7 @@
 from langchain_core.messages import HumanMessage, SystemMessage
-from langgraph.graph.graph import CompiledGraph
-from graph import graph
-from graph_manager import config_history, ai_config_history
-from config import config
+from llm_graph.graph import graph
+from llm_graph.graph_manager import config_history, ai_config_history
+from config.config import config
 
 
 
