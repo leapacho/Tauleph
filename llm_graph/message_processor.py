@@ -17,8 +17,8 @@ class MessageProcessor:
     Serves like the bridge between Discord and Groq's API.
     """
     def __init__(self):
-        self.message_template = f"{discord_obj.message_author} sent a message. Respond to it in a conversational manner: {discord_obj.message_content}"
         self.sys_prompt = ""
+        self.sys_prompt_template = f"User {discord_obj.message_author} has sent a message."
         self.downloaded_attachment = None
 
     async def process_message(self) -> str:
@@ -39,8 +39,8 @@ class MessageProcessor:
         }
         
 
-
-        self.downloaded_attachment = await self._download_attachment(discord_obj.att_url)
+        if discord_obj.att_url:
+            self.downloaded_attachment = await self._download_attachment(discord_obj.att_url)
         result = await self._determine_message_type(processing_methods)
         return result
 
@@ -65,7 +65,6 @@ class MessageProcessor:
                 return result
             
     async def _download_attachment(self, url: str):
-        if url:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     if "discordapp" in url:
@@ -111,10 +110,10 @@ class MessageProcessor:
         """
         async with discord_obj.message.channel.typing():
             image_messages=([
-                {"type": "text", "text": self.message_template},
+                {"type": "text", "text": discord_obj.message_content},
                 {"type": "image_url", "image_url": discord_obj.att_url}
                 ], 
-                self.sys_prompt)
+                self.sys_prompt + self.sys_prompt_template)
         return image_messages
 
     async def _process_audio(self) -> str:
@@ -127,9 +126,9 @@ class MessageProcessor:
         myfile = await self._upload_to_files_api(self.downloaded_attachment)
 
         async with discord_obj.message.channel.typing():
-            audio_messages=([{"type": "text", "text": self.message_template},
+            audio_messages=([{"type": "text", "text": discord_obj.message_content},
                             {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
-                            self.sys_prompt)
+                            self.sys_prompt + self.sys_prompt_template)
         return audio_messages
 
     async def _process_text(self) -> str:
@@ -142,9 +141,9 @@ class MessageProcessor:
         async with discord_obj.message.channel.typing():
                 text_messages=([{
                     "type": "text",
-                    "text": self.message_template
+                    "text": discord_obj.message_content
                 }], 
-                self.sys_prompt) # These lines made me rewrite the entirety of Tauleph one time.
+                self.sys_prompt + self.sys_prompt_template)
         return text_messages
     
     async def _process_video(self) -> str:
@@ -159,7 +158,7 @@ class MessageProcessor:
         
 
         async with discord_obj.message.channel.typing():
-            video_messages=([{"type": "text", "text": self.message_template},
+            video_messages=([{"type": "text", "text": discord_obj.message_content},
                             {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
                             f"{self.sys_prompt}. The user {discord_obj.message_author} sent a video.")
         return video_messages
