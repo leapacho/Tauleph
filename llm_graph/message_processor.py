@@ -34,7 +34,7 @@ class MessageProcessor:
             "image": self._process_image,
             "audio": self._process_audio,
             "video": self._process_video,
-            "gif": self._process_gif, # This dict entry isn't used, but the method is.
+            #"gif": self._process_gif, unused dict entry
             "": self._process_text # If att_type is empty then this is the default.
         }
         
@@ -57,6 +57,9 @@ class MessageProcessor:
             result = await self._process_gif()
             return result
         if discord_obj.message_content.startswith("https://tenor.com/") and "gif" in discord_obj.message_content:
+            result = await self._process_gif()
+            return result
+        if discord_obj.att_type.endswith("gif"):
             result = await self._process_gif()
             return result
         for prefix, method in processing_methods.items():
