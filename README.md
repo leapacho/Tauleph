@@ -10,7 +10,7 @@ You are also open to make an [issue](https://github.com/leapacho/Tauleph/issues/
 
 You can test Tauleph in its [testing Discord server](https://discord.gg/CrXuXNfvHV).
 
-For anything about Tauleph you can send me a DM in Discord. My Discord username: limonero. (with the dot)
+For anything about Tauleph, you can send me a DM in Discord. My Discord username: limonero. (with the dot)
 
 #  Functionality
 ##  Regeneration:
