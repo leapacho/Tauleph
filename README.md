@@ -5,12 +5,12 @@ A simple Discord AI bot written in Python, using Discord.py, Gemini, LangChain a
 
 
 WARNING: THIS IS MY FIRST PYTHON PROJECT AND GITHUB REPOSITORY!!! THE CODE IS NOT GUARANTEED TO WORK AS INTENDED!!!
-Constructive criticism, feedback and contributions are welcome! Please consider making a pull request (read the [contribution rules](https://github.com/leapacho/Tauleph/blob/main/CONTRIBUTING.md)) for your fork as it is likely I'll accept the changes!
+Constructive criticism, feedback and contributions are welcome! Please consider making a pull request for your fork as it is likely I'll accept the changes! (but first read the [contribution rules](https://github.com/leapacho/Tauleph/blob/main/CONTRIBUTING.md))
 You are also open to make an [issue](https://github.com/leapacho/Tauleph/issues/new). I will try my best to maintain this repo.
 
-
-
 You can test Tauleph in its [testing Discord server](https://discord.gg/CrXuXNfvHV).
+
+For anything about Tauleph you can send me a DM in Discord. My Discord username: limonero. (with the dot)
 
 #  Functionality
 ##  Regeneration:
