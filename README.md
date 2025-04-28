@@ -2,7 +2,7 @@
 A simple Discord AI bot written in Python, using Discord.py, Gemini, LangChain and LangGraph.
 
 WARNING: THIS IS MY FIRST PYTHON PROJECT!!! THE CODE IS NOT GUARANTEED TO WORK AS INTENDED!!!
-Constructive criticism, feedback and contributions are welcome! Please consider making a pull request before forking!
+Constructive criticism, feedback and contributions are welcome! Please consider making a pull request for your fork as it is likely I'll accept the changes!
 You are also open to make an issue. I will try my best to maintain this repo.
 
 #  Functionality
