@@ -12,13 +12,10 @@ from langchain_community.tools.searx_search.tool import SearxSearchResults
 from langgraph.prebuilt import ToolNode, tools_condition
 from textwrap import TextWrapper
 from langchain_core.messages import trim_messages
-#import sqlite3
-#from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from dotenv import load_dotenv
 from utils.split_chunks import split_text
 load_dotenv() #Loads environment variables.
-# conn = sqlite3.connect("checkpoints.sqlite", check_same_thread=False)
 searx_search = SearxSearchWrapper(searx_host="http://localhost:32787") #SearxSearchWrapper is a class that allows you to interact with the Searx API.
 searx_tool = SearxSearchResults(wrapper=searx_search, num_results=10) #SearxSearchResults is a class that allows you to get search results from Searx.
 
