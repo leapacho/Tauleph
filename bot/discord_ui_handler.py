@@ -83,7 +83,7 @@ class RegenButtons(discord.ui.View):
         
         await interaction.response.defer() # Defer the response to avoid having the
                                            # "Interaction failed" warning on the Discord message.
-        regen_msg = await checkpoint_manager.page_backwards() 
+        regen_msg = await checkpoint_manager.page_backward() 
         await self._on_navigation_change()
 
         await discord_ui_handler.send_message_regen(regen_msg)
@@ -93,7 +93,7 @@ class RegenButtons(discord.ui.View):
 
         await interaction.response.defer()
 
-        regen_msg =  await checkpoint_manager.page_forwards()
+        regen_msg =  await checkpoint_manager.page_forward()
         await self._on_navigation_change()
 
         await discord_ui_handler.send_message_regen(regen_msg)

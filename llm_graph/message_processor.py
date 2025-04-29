@@ -18,7 +18,6 @@ class MessageProcessor:
     """
     def __init__(self):
         self.sys_prompt = ""
-        self.sys_prompt_template = f"User {discord_obj.message_author} has sent a message."
         self.downloaded_attachment = None
 
     async def process_message(self) -> str:
@@ -85,7 +84,6 @@ class MessageProcessor:
                                     alt_url = url.replace("media.discordapp.net", "fixcdn.hyonsu.com")
                                 else:
                                     raise NotImplementedError(f"Discord CDN not implemented: {url}")
-                                print(alt_url)
                                 # Get a response from the alternate URL.
                                 async with session.get(alt_url) as alt_response:
                                     return await alt_response.read()
@@ -131,7 +129,7 @@ class MessageProcessor:
         async with discord_obj.message.channel.typing():
             audio_messages=([{"type": "text", "text": discord_obj.message_content},
                             {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
-                            self.sys_prompt + self.sys_prompt_template)
+                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent an audio file.")
         return audio_messages
 
     async def _process_text(self) -> str:
@@ -146,7 +144,7 @@ class MessageProcessor:
                     "type": "text",
                     "text": discord_obj.message_content
                 }], 
-                self.sys_prompt + self.sys_prompt_template)
+                f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a text message.")
         return text_messages
     
     async def _process_video(self) -> str:
@@ -163,7 +161,7 @@ class MessageProcessor:
         async with discord_obj.message.channel.typing():
             video_messages=([{"type": "text", "text": discord_obj.message_content},
                             {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
-                            f"{self.sys_prompt}. The user {discord_obj.message_author} sent a video.")
+                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a video.")
         return video_messages
     
     async def _process_gif(self) -> tuple:
@@ -183,7 +181,7 @@ class MessageProcessor:
         async with discord_obj.message.channel.typing():
             gif_messages=([{"type": "text", "text": f""},
                             {"type": "media", "mime_type": "video/mp4", "file_uri": myfile.uri}],
-                            f"{self.sys_prompt}. The user {discord_obj.message_author} sent a GIF in the form of a video.")
+                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a GIF in the form of a video.")
         return gif_messages
     
     def convert_gif_to_mp4(self, content_bytes):

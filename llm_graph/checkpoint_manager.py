@@ -11,13 +11,11 @@ class CheckpointManager:
         self.current_index = 0
         self.ai_configs = []
         
-
-
     async def response(self, user_input=None, system_input=None):
         """
         Invokes the LLM for a response.
         """
-        self.graph = graph.setup_graph(await config.current_model())
+        self.graph = await graph.setup_graph(await config.current_model())
 
         #Prepare initial messages.
         user_message = HumanMessage(
@@ -37,22 +35,26 @@ class CheckpointManager:
         """
         Invokes the LLM for a regeneration.
         """
-        self.graph = graph.setup_graph(await config.current_model())
+        self.graph = await graph.setup_graph(await config.current_model())
         new_config = await config_history(self.graph, self.default_config)
         response = await graph.run_graph(self.graph, new_config)
         self.ai_configs = await ai_config_history(self.graph, self.default_config) 
         self.current_index = len(self.ai_configs)-1
         return response
     
-    async def page_backwards(self):
-        self.current_index-=1
-        msg = (await graph.memory.aget(self.current_config))["channel_values"]["messages"][-1].content
-        return msg
+    async def page_backward(self):
+        if not self.can_go_backward:
+            self.current_index-=1
+            msg = (await graph.memory.aget(self.current_config))["channel_values"]["messages"][-1].content
+            return msg
+        return ["None."]
     
-    async def page_forwards(self):
-        self.current_index+=1
-        msg = (await graph.memory.aget(self.current_config))["channel_values"]["messages"][-1].content
-        return msg
+    async def page_forward(self):
+        if not self.can_go_forward:
+            self.current_index+=1
+            msg = (await graph.memory.aget(self.current_config))["channel_values"]["messages"][-1].content
+            return msg
+        return ["None."]
     
     async def update_thread_id(self, thread_id: str) -> None:
         """
