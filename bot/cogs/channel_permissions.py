@@ -4,6 +4,7 @@ from discord import app_commands
 
 from config.config import config
 from bot.discord_obj_processor import discord_obj
+from utils.validation import validate_permissions
 
 class ChannelPermissions(commands.Cog):
     """
@@ -26,6 +27,9 @@ class ChannelPermissions(commands.Cog):
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
+        if not await validate_permissions(interaction):
+                 return
+
 
         await config.allow_channel(interaction.channel)
         await interaction.response.send_message(
@@ -45,8 +49,11 @@ class ChannelPermissions(commands.Cog):
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
+        if not await validate_permissions(interaction):
+                 return
 
-        if await config.disallow_channel(interaction.guild):
+
+        if await config.disallow_channel(interaction.channel):
             await interaction.response.send_message(
             f"{discord_obj.bot_name} will no longer interact in this channel.",
             ephemeral=False

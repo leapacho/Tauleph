@@ -47,7 +47,6 @@ class Graph:
         Clears the chat history for a specific thread ID using the checkpointer.
         This should be called from your Discord bot code when the clear command is issued.
         """
-        print(type(thread_id))
         try:
             # The checkpointer's manager handles deleting threads
             await self.memory.adelete_thread(thread_id=thread_id)

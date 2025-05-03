@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from config.config import config
 from bot.discord_obj_processor import discord_obj
+from utils.validation import validate_permissions
 
 
 class ModelSelect(discord.ui.Select):
@@ -69,6 +70,8 @@ class SelectModel(commands.Cog):
         Changes and updates the guild's selected model. 
         """
 
+        if not await validate_permissions(interaction):
+                 return
         # Sets the view of the dropdown menu.
         view = ModelSelectView()
 

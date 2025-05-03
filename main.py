@@ -45,6 +45,7 @@ async def on_ready():
     await bot.load_extension("bot.cogs.sys_prompts")
     await bot.load_extension("bot.cogs.channel_permissions")
     await bot.load_extension("bot.cogs.set_guild_defaults")
+    await bot.load_extension("bot.cogs.config_permissions")
 
     await bot.tree.sync()   
 

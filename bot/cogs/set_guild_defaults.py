@@ -7,6 +7,8 @@ from bot.discord_obj_processor import discord_obj
 from llm_graph.graph import graph
 from llm_graph.checkpoint_manager import checkpoint_manager
 
+from utils.validation import validate_permissions
+
 class SetGuildDefault(commands.Cog):
     """
     Command for setting all the settings of the LLM to their defaults.
@@ -25,6 +27,9 @@ class SetGuildDefault(commands.Cog):
         discord_obj.guild = interaction.guild
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
+
+        if not await validate_permissions(interaction):
+                 return
 
 
         await config.set_guild_vars_default(interaction.guild)
@@ -45,8 +50,10 @@ class SetGuildDefault(commands.Cog):
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
 
+        if not await validate_permissions(interaction):
+                 return
+
         thread_id = f"{discord_obj.guild.id}"
-        print(thread_id)
 
         await graph.clear_history(thread_id)
         checkpoint_manager.ai_configs = []

@@ -41,6 +41,8 @@ This command allows you to restore the system message to its default. Use this i
 This clears Tauleph's chat history, or its memory, permanently. You cannot undo this command. Use with caution.
 ## `/set_settings_to_default:`
 This command sets all of Tauleph's configurable settings to their respective defaults.  
+## `/set_role:`
+Specify which users are allowed to change Tauleph's sensitive settings. You need administrative permissions to use this command.
 ## `/help functionality:`
 Shows the functionality written above.
 ## `/help commands:`

@@ -10,6 +10,7 @@ class Config:
         self.guild_allowed_channels_id = {}
         self.model_list = {}
         self.help_commands = {}
+        self.config_roles = {}
         self._save_lock = asyncio.Lock()
 
         self.load_config()
@@ -19,7 +20,7 @@ class Config:
 
     def load_config(self):
         # List the attribute names that need configuration.
-        for attr in ["guild_models", "guild_sys_prompts", "guild_allowed_channels_id", "model_list", "help_commands"]:
+        for attr in ["guild_models", "guild_sys_prompts", "guild_allowed_channels_id", "model_list", "help_commands", "config_roles"]:
             with open(f"config/config.json", "r") as file:
                 data=json.load(file)
                 loaded_data=data[attr]
@@ -168,14 +169,21 @@ class Config:
             await self.save_config("guild_models", self.guild_models)
             await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
 
-    def get_conversation_thread_id(self, interaction: discord.Interaction) -> str:
-         if interaction.guild:
-             # For guild channels, use guild ID + channel ID string
-             # Use interaction.guild_id and interaction.channel_id which are directly available
-             return f"{interaction.guild_id}-{interaction.channel_id}"
-         else:
-             # For DMs, just use the channel ID string
-             return str(interaction.channel_id)
+    async def save_role(self, role: str, guild: discord.Guild) -> None:
+        key = str(guild.id)
+        self.config_roles[key] = int(role.strip("<@&>"))
+        await self.save_config("config_roles", self.config_roles)
+
+    #make the config for setting role for permission checking
+
+    # def get_conversation_thread_id(self, interaction: discord.Interaction) -> str:
+    #      if interaction.guild:
+    #          # For guild channels, use guild ID + channel ID string
+    #          # Use interaction.guild_id and interaction.channel_id which are directly available
+    #          return f"{interaction.guild_id}-{interaction.channel_id}"
+    #      else:
+    #          # For DMs, just use the channel ID string
+    #          return str(interaction.channel_id)
 
 
 config = Config()

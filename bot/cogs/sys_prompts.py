@@ -4,6 +4,7 @@ from discord import app_commands
 from bot.discord_obj_processor import discord_obj
 
 from config.config import config
+from utils.validation import validate_permissions
 
 class SysPrompts(commands.Cog):
     """
@@ -24,6 +25,9 @@ class SysPrompts(commands.Cog):
         discord_obj.guild = interaction.guild
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
+        
+        if not await validate_permissions(interaction):
+                 return
 
 
         if len(sys_message) < 2000:
@@ -71,6 +75,9 @@ class SysPrompts(commands.Cog):
         discord_obj.guild = interaction.guild
         discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
         discord_obj.bot_name = discord_obj.bot_member.display_name
+
+        if not await validate_permissions(interaction):
+                 return
 
         default_sys_prompt = await config.modify_sys_prompt(config.default_sys_prompt)
 

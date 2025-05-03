@@ -15,7 +15,7 @@ class CheckpointManager:
         """
         Invokes the LLM for a response.
         """
-        self.graph = await graph.setup_graph(await config.current_model())
+        self.graph = graph.setup_graph(await config.current_model())
 
         #Prepare initial messages.
         user_message = HumanMessage(
@@ -35,7 +35,7 @@ class CheckpointManager:
         """
         Invokes the LLM for a regeneration.
         """
-        self.graph = await graph.setup_graph(await config.current_model())
+        self.graph = graph.setup_graph(await config.current_model())
         new_config = await config_history(self.graph, self.default_config)
         response = await graph.run_graph(self.graph, new_config)
         self.ai_configs = await ai_config_history(self.graph, self.default_config) 

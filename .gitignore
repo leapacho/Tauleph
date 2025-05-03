@@ -33,3 +33,6 @@ bot/cogs/__pycache__/channel_permissions.cpython-312.pyc
 bot/__pycache__/discord_obj_processor.cpython-312.pyc
 bot/__pycache__/discord_ui_handler.cpython-312.pyc
 bot/cmds/__pycache__/help_commands.cpython-312.pyc
+.vscode/settings.json
+.env
+bot/cogs/__pycache__/config_permissions.cpython-312.pyc
