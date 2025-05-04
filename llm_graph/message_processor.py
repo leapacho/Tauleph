@@ -1,14 +1,16 @@
-from bot.discord_obj_processor import discord_obj
 from config.config import config
 from google import genai
 from io import BytesIO
 from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
+import discord
+from discord.ext import commands
 import ffmpy
 import aiohttp
 import asyncio
 import tempfile
 import os
+from utils.retrieve_member import retrieve_member
 
 class MessageProcessor:
     """
@@ -16,9 +18,17 @@ class MessageProcessor:
 
     Serves like the bridge between Discord and Groq's API.
     """
-    def __init__(self):
+    def __init__(self, message: discord.Message, bot: commands.Bot):
         self.sys_prompt = ""
         self.downloaded_attachment = None
+        self.message = message
+
+        self.attachments = message.attachments
+        self.att_type = self.attachments[-1].content_type if self.attachments else ""
+        self.att_url = self.attachments[-1].url if self.attachments else ""
+        self.message_content = message.content
+        self.message_author = message.author
+        self.bot = bot
 
     async def process_message(self) -> str:
         """
@@ -26,8 +36,9 @@ class MessageProcessor:
 
         Can process images, audio and text, and then sends the output.
         """
-
-        self.sys_prompt = await config.initialize_system_prompt()
+        bot_member: discord.Member = await retrieve_member(self.message, self.bot.user.id)
+        bot_name = bot_member.display_name
+        self.sys_prompt = await config.initialize_system_prompt(self.message.guild, bot_name)
 
         processing_methods={ # This dictionary allows for easy implementation of other processing methods.
             "image": self._process_image,
@@ -38,13 +49,13 @@ class MessageProcessor:
         }
         
 
-        if discord_obj.att_url:
-            self.downloaded_attachment = await self._download_attachment(discord_obj.att_url)
+        if self.att_url:
+            self.downloaded_attachment = await self._download_attachment(self.att_url)
         result = await self._determine_message_type(processing_methods)
         return result
 
     async def _determine_message_type(self, processing_methods: dict) -> str:
-        """
+        """.
         Determines if the message is an image, audio, or text and processes it accordingly.
 
         Args:
@@ -52,17 +63,17 @@ class MessageProcessor:
         Returns:
             str: The result of the corresponding processing method.
         """
-        if discord_obj.message_content.startswith("https://") and discord_obj.message_content.endswith(".gif"):
+        if self.message_content.startswith("https://") and self.message_content.endswith(".gif"):
             result = await self._process_gif()
             return result
-        if discord_obj.message_content.startswith("https://tenor.com/") and "gif" in discord_obj.message_content:
+        if self.message_content.startswith("https://tenor.com/") and "gif" in self.message_content:
             result = await self._process_gif()
             return result
-        if discord_obj.att_type.endswith("gif"):
+        if self.att_type.endswith("gif"):
             result = await self._process_gif()
             return result
         for prefix, method in processing_methods.items():
-            if discord_obj.att_type.startswith(prefix):
+            if self.att_type.startswith(prefix):
                 result = await method() # Calls the corresponding method.
                 return result
             
@@ -109,12 +120,12 @@ class MessageProcessor:
         Returns:
             str: The output of the LLM's processing of the image.
         """
-        async with discord_obj.message.channel.typing():
+        async with self.message.channel.typing():
             image_messages=([
-                {"type": "text", "text": discord_obj.message_content},
-                {"type": "image_url", "image_url": discord_obj.att_url}
+                {"type": "text", "text": self.message_content},
+                {"type": "image_url", "image_url": self.att_url}
                 ], 
-                self.sys_prompt + self.sys_prompt_template)
+                self.sys_prompt)
         return image_messages
 
     async def _process_audio(self) -> str:
@@ -126,10 +137,10 @@ class MessageProcessor:
         """
         myfile = await self._upload_to_files_api(self.downloaded_attachment)
 
-        async with discord_obj.message.channel.typing():
-            audio_messages=([{"type": "text", "text": discord_obj.message_content},
-                            {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
-                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent an audio file.")
+        async with self.message.channel.typing():
+            audio_messages=([{"type": "text", "text": self.message_content},
+                            {"type": "media", "mime_type": self.att_type, "file_uri": myfile.uri}],
+                            f"{self.sys_prompt}. A user called {self.message_author} sent an audio file.")
         return audio_messages
 
     async def _process_text(self) -> str:
@@ -139,12 +150,12 @@ class MessageProcessor:
         Returns:
             str: The output of the LLM's processing of the text.
         """
-        async with discord_obj.message.channel.typing():
+        async with self.message.channel.typing():
                 text_messages=([{
                     "type": "text",
-                    "text": discord_obj.message_content
+                    "text": self.message_content
                 }], 
-                f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a text message.")
+                f"{self.sys_prompt}. A user called {self.message_author} sent a text message.")
         return text_messages
     
     async def _process_video(self) -> str:
@@ -158,15 +169,15 @@ class MessageProcessor:
         myfile = self._upload_to_files_api(self.downloaded_attachment)
         
 
-        async with discord_obj.message.channel.typing():
-            video_messages=([{"type": "text", "text": discord_obj.message_content},
-                            {"type": "media", "mime_type": discord_obj.att_type, "file_uri": myfile.uri}],
-                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a video.")
+        async with self.message.channel.typing():
+            video_messages=([{"type": "text", "text": self.message_content},
+                            {"type": "media", "mime_type": self.att_type, "file_uri": myfile.uri}],
+                            f"{self.sys_prompt}. A user called {self.message_author} sent a video.")
         return video_messages
     
     async def _process_gif(self) -> tuple:
         # Get the downloaded gif.
-        self.downloaded_attachment = await self._download_attachment(discord_obj.message_content)
+        self.downloaded_attachment = await self._download_attachment(self.message_content)
 
         # Conversion: gif -> mp4
         with ThreadPoolExecutor() as pool:
@@ -178,10 +189,10 @@ class MessageProcessor:
     
         myfile = await self._upload_to_files_api(media_content, gif=True)
         # Return the processed message.
-        async with discord_obj.message.channel.typing():
+        async with self.message.channel.typing():
             gif_messages=([{"type": "text", "text": f""},
                             {"type": "media", "mime_type": "video/mp4", "file_uri": myfile.uri}],
-                            f"{self.sys_prompt}. A user called {discord_obj.message_author} sent a GIF in the form of a video.")
+                            f"{self.sys_prompt}. A user called {self.message_author} sent a GIF in the form of a video.")
         return gif_messages
     
     def convert_gif_to_mp4(self, content_bytes):
@@ -220,7 +231,7 @@ class MessageProcessor:
         file_data = BytesIO(media_content)
         client = genai.Client()
                 # Upload to the Files API.
-        mime_type = discord_obj.att_type if not gif else "video/mp4"
+        mime_type = self.att_type if not gif else "video/mp4"
         myfile = await asyncio.get_event_loop().run_in_executor(
             None,
             lambda: client.files.upload(file=file_data, config={"mime_type": mime_type})

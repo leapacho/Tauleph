@@ -36,3 +36,4 @@ bot/cmds/__pycache__/help_commands.cpython-312.pyc
 .vscode/settings.json
 .env
 bot/cogs/__pycache__/config_permissions.cpython-312.pyc
+utils/__pycache__/retrieve_member.cpython-312.pyc

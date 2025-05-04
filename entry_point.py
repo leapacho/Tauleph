@@ -1,13 +1,13 @@
+import discord
 from llm_graph.message_processor import MessageProcessor
 from llm_graph.checkpoint_manager import checkpoint_manager
 from bot.discord_ui_handler import discord_ui_handler, RegenButtons
-from bot.discord_obj_processor import discord_obj
+from discord.ext import commands
+from config.config import config
 
 
 
-
-
-async def entry_point():
+async def entry_point(message: discord.Message, bot: commands.Bot):
     """
     Entry point for processing messages.
     
@@ -16,16 +16,15 @@ async def entry_point():
 
     # Initiate variables.
     discord_ui_handler.regen_buttons = RegenButtons()
-    await checkpoint_manager.update_thread_id(f"{discord_obj.guild.id}")
-    
     
     # Process the message.
-    message_processor = MessageProcessor()
+    message_processor = MessageProcessor(message, bot)
     result = await message_processor.process_message()
     # Get the API response.
-    llm_output = await checkpoint_manager.response(result[0], result[1])
+    
+    llm_output = await checkpoint_manager.response(result[0], result[1], message)
 
-    await discord_ui_handler.send_message(llm_output)
+    await discord_ui_handler.send_message(llm_output, message.channel)
 
 
     

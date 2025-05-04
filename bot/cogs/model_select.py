@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from config.config import config
-from bot.discord_obj_processor import discord_obj
 from utils.validation import validate_permissions
 
 
@@ -41,7 +40,7 @@ class ModelSelect(discord.ui.Select):
             f"Selected model: **{selected_model}**",
             ephemeral=False
         )
-        await config.save_selected_model(selected_model)
+        await config.save_selected_model(selected_model, interaction.guild)
         await interaction.message.delete()
 
 
@@ -86,8 +85,8 @@ class SelectModel(commands.Cog):
         """
         Sends a message with the guild's selected model.
         """
-        discord_obj.guild = interaction.guild
-        llm_model = await config.current_model()
+        guild = interaction.guild
+        llm_model = await config.current_model(guild)
 
         await interaction.response.send_message(
             f"The current LLM model is: **{llm_model}**",

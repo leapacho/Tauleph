@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from bot.discord_obj_processor import discord_obj
 
 from config.config import config
 from utils.validation import validate_permissions
+from utils.retrieve_member import retrieve_member
 
 class SysPrompts(commands.Cog):
     """
@@ -22,16 +22,15 @@ class SysPrompts(commands.Cog):
             interaction (discord.Interaction): The interaction object representing the user's action.
             sys_message (str): Specify where to place the bot's name with "$name". e.g: "$name" will be turned into "Tauleph".
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
         
         if not await validate_permissions(interaction):
                  return
 
 
         if len(sys_message) < 2000:
-            new_sys_prompt = await config.modify_sys_prompt(sys_message)
+            new_sys_prompt = await config.modify_sys_prompt(sys_message, bot_name)
 
             await interaction.response.send_message(
                 f"System message has been changed to '{new_sys_prompt}'",
@@ -51,11 +50,10 @@ class SysPrompts(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
-        current_sys_prompt = await config.initialize_system_prompt()
+        current_sys_prompt = await config.initialize_system_prompt(interaction.guild, bot_name)
 
 
         await interaction.response.send_message(
@@ -72,14 +70,13 @@ class SysPrompts(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
         if not await validate_permissions(interaction):
                  return
 
-        default_sys_prompt = await config.modify_sys_prompt(config.default_sys_prompt)
+        default_sys_prompt = await config.modify_sys_prompt(config.default_sys_prompt, bot_name)
 
         await interaction.response.send_message(
             f"The system message has been set to the default: '{default_sys_prompt}'",

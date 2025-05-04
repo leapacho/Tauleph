@@ -3,7 +3,6 @@ import os
 
 from discord.ext import commands
 from dotenv import load_dotenv
-from bot.discord_obj_processor import discord_obj
 from entry_point import entry_point
 from utils.validation import validate_message
 from config.config import config
@@ -51,9 +50,8 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: discord.Message):
-    await discord_obj.update_object_variables(message, bot)
-    if not await validate_message(message):
+    if not await validate_message(message, bot):
         return
-    await entry_point()
+    await entry_point(message, bot)
 
 bot.run(os.environ.get("BOT_API_KEY"))

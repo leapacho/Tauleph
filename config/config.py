@@ -1,7 +1,7 @@
 import json
 import discord
 import asyncio
-from bot.discord_obj_processor import discord_obj
+from typing import Union
 
 class Config:
     def __init__(self):
@@ -44,17 +44,17 @@ class Config:
 
     # Methods for models.
         
-    async def create_model_default(self):
+    async def create_model_default(self, guild: discord.Guild):
         """
         Creates the default model for the bot given the guild object if it hasn't been set yet,
         and updates the message manager with the corresponding guild's set model.
         """
-        key = str(discord_obj.guild.id)
+        key = str(guild.id)
         if not key in self.guild_models.keys():
             self.guild_models[key] = "gemini-2.0-flash-lite"
             await self.save_config("guild_models", self.guild_models)
 
-    async def save_selected_model(self, model: str):
+    async def save_selected_model(self, model: str, guild: discord.Guild):
         """
         Saves the model of the bot given the guild object and refreshes the message manager
         with the same model.
@@ -63,40 +63,41 @@ class Config:
             model (str): The string corresponding to the new selection.
             guild (discord.Guild): Guild object. 
         """
-        await self.create_model_default()
+        await self.create_model_default(guild)
 
-        key = str(discord_obj.guild.id)
+        key = str(guild.id)
         self.guild_models[key] = model  
         await self.save_config("guild_models", self.guild_models)
 
-    async def current_model(self) -> str:
+    async def current_model(self, guild) -> str:
         """
         Gets the current model of the given guild.
         """
-        await self.create_model_default()
-        return self.guild_models[str(discord_obj.guild.id)]
+        key = str(guild.id)
+        await self.create_model_default(guild)
+        return self.guild_models[key]
     
     # Methods for system messages.
     
-    async def modify_sys_prompt(self, sys_prompt: str) -> None:
+    async def modify_sys_prompt(self, sys_prompt: str, guild, bot_name) -> None:
         """
         Modifies the system prompt given the system prompt and the guild.
 
         Args:
             sys_prompt (str): The new system prompt to replace the old one with.
         """
-        key = str(discord_obj.guild.id)
+        key = str(guild.id)
 
         self.guild_sys_prompts[key] = sys_prompt
         await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
-        return await self.initialize_system_prompt()
+        return await self.initialize_system_prompt(guild, bot_name)
 
 
-    async def initialize_system_prompt(self) -> None:
+    async def initialize_system_prompt(self, guild, bot_name) -> None:
         """
         Creates a system prompt given the guild object if it doesn't already exist and updates it if it already exists.
         """
-        key = str(discord_obj.guild.id)
+        key = str(guild.id)
         # Check if the key is in the system prompts dictionary
         if not key in self.guild_sys_prompts:
             self.guild_sys_prompts[key] = self.default_sys_prompt # If it isn't, then create a new one with the default message.
@@ -107,7 +108,7 @@ class Config:
             self.guild_sys_prompts[key] =  f"{self.guild_sys_prompts[key]} Your name is $name"
             await self.save_config("guild_sys_prompts", self.guild_sys_prompts)
 
-        formatted_sys_prompt: str = self.guild_sys_prompts[key].replace("$name", discord_obj.bot_name)
+        formatted_sys_prompt: str = self.guild_sys_prompts[key].replace("$name", bot_name)
         return formatted_sys_prompt
 
     # Channel permission methods.
@@ -175,15 +176,16 @@ class Config:
         await self.save_config("config_roles", self.config_roles)
 
     #make the config for setting role for permission checking
-
-    # def get_conversation_thread_id(self, interaction: discord.Interaction) -> str:
-    #      if interaction.guild:
-    #          # For guild channels, use guild ID + channel ID string
-    #          # Use interaction.guild_id and interaction.channel_id which are directly available
-    #          return f"{interaction.guild_id}-{interaction.channel_id}"
-    #      else:
-    #          # For DMs, just use the channel ID string
-    #          return str(interaction.channel_id)
+    
+    def get_graph_config(self, discord_object: Union[discord.Message, discord.Interaction]) -> dict:
+            if discord_object.guild:
+                # For guild channels, use guild ID + channel ID string
+                # Use interaction.guild_id and interaction.channel_id which are directly available
+                return {"configurable": {"thread_id": f"{discord_object.guild.id}-{discord_object.channel.id}"}}
+            else:
+                # For DMs, just use the channel ID string
+                return {"configurable": {"thread_id": str(discord_object.channel.id)}}
+            
 
 
 config = Config()

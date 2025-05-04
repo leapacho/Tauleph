@@ -1,5 +1,4 @@
 import discord
-from bot.discord_obj_processor import discord_obj
 from llm_graph.checkpoint_manager import checkpoint_manager
 
 
@@ -11,14 +10,14 @@ class DiscordUIHandler():
         self.regen_buttons: RegenButtons = None
         self.newest_messages: list = []
         
-    async def send_message_regen(self, message: list):
+    async def send_message_regen(self, message: list, channel: discord.TextChannel):
         
         if len(message) > 1:
             await self._delete_previous_messages()
             for i, chunk in enumerate(message):
                 is_last_chunk = i == (len(message)-1)
                 view = self.regen_buttons if is_last_chunk else None
-                newest_llm_message = await discord_obj.text_channel.send(chunk, view=view)
+                newest_llm_message = await channel.send(chunk, view=view)
                 self.newest_messages.append(newest_llm_message)
         else:
             view = self.regen_buttons
@@ -27,7 +26,7 @@ class DiscordUIHandler():
             
 
 
-    async def send_message(self, message: list):
+    async def send_message(self, message: list, channel: discord.TextChannel):
         """
         Sends the given string to Discord.
         """
@@ -37,7 +36,7 @@ class DiscordUIHandler():
 
             is_last_chunk = i == (len(message)-1)
             view = self.regen_buttons if is_last_chunk else None
-            newest_llm_message = await discord_obj.text_channel.send(chunk, view=view)
+            newest_llm_message = await channel.send(chunk, view=view)
             new_messages.append(newest_llm_message)
         self.newest_messages = new_messages
 
@@ -86,7 +85,7 @@ class RegenButtons(discord.ui.View):
         regen_msg = await checkpoint_manager.page_backward() 
         await self._on_navigation_change()
 
-        await discord_ui_handler.send_message_regen(regen_msg)
+        await discord_ui_handler.send_message_regen(regen_msg, interaction.channel)
 
     @discord.ui.button(label="➡️", style=discord.ButtonStyle.blurple, disabled=True)
     async def right_navigation_button(self, interaction: discord.Interaction, button: discord.Button):
@@ -96,14 +95,14 @@ class RegenButtons(discord.ui.View):
         regen_msg =  await checkpoint_manager.page_forward()
         await self._on_navigation_change()
 
-        await discord_ui_handler.send_message_regen(regen_msg)
+        await discord_ui_handler.send_message_regen(regen_msg, interaction.channel)
 
     @discord.ui.button(label="🔁", style=discord.ButtonStyle.blurple)
     async def regeneration_button(self, interaction: discord.Interaction, button: discord.Button):
 
         await interaction.response.defer()
 
-        regen_msg = await checkpoint_manager.regeneration()
+        regen_msg = await checkpoint_manager.regeneration(interaction)
         await self._on_navigation_change()
 
-        await discord_ui_handler.send_message_regen(regen_msg)
+        await discord_ui_handler.send_message_regen(regen_msg, interaction.channel)

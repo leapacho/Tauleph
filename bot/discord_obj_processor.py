@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from utils.retrieve_member import retrieve_member
 
 class DiscordObjectProcessor:
     def __init__(self):
@@ -32,7 +33,7 @@ class DiscordObjectProcessor:
         self.guild = discord_object.guild
         self.message_author = discord_object.author.display_name 
         self.bot_user = bot.user
-        self.bot_member = await self.guild.fetch_member(bot.user.id)
+        self.bot_member: discord.Member = await retrieve_member(discord_object, self.bot_user.id)
         self.bot_name = self.bot_member.display_name
         self.message_content = discord_object.content
 

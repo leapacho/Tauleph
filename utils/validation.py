@@ -1,9 +1,10 @@
-from bot.discord_obj_processor import discord_obj
 import discord
+from discord.ext import commands
 
 from config.config import config
+from utils.retrieve_member import retrieve_member
 
-async def validate_message(message: discord.Message) -> bool:
+async def validate_message(message: discord.Message, bot: commands.Bot) -> bool:
     """
     Checks whether the message is a bot call or a message from itself, and 
     if it comes from an allowed channel.
@@ -13,13 +14,15 @@ async def validate_message(message: discord.Message) -> bool:
     Returns:
         bool: Whether it was a bot call or not.
     """
-    if message.author.id == discord_obj.bot_user.id:
+    if message.author.id == bot.user.id:
         return False
+    bot_member: discord.Member = await retrieve_member(message, bot.user.id)
+    bot_name = bot_member.display_name
 
     is_allowed_channel = message.channel.id in config.guild_allowed_channels_id.get(str(message.guild.id), []) # Uses the get attribute to avoid errors.
 
-    bot_name_in_message = is_allowed_channel and discord_obj.bot_name.lower() in message.content.lower() # True if the bot's name is in the message and it comes from an allowed channel.
-    bot_mentioned = is_allowed_channel and discord_obj.bot_user in message.mentions # True if the bot is mentioned in the message and it comes from an allowed channel.
+    bot_name_in_message = is_allowed_channel and bot_name.lower() in message.content.lower() # True if the bot's name is in the message and it comes from an allowed channel.
+    bot_mentioned = is_allowed_channel and bot.user in message.mentions # True if the bot is mentioned in the message and it comes from an allowed channel.
 
     return bot_name_in_message or bot_mentioned
 

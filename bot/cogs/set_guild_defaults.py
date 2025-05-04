@@ -3,11 +3,11 @@ from discord.ext import commands
 from discord import app_commands
 
 from config.config import config
-from bot.discord_obj_processor import discord_obj
 from llm_graph.graph import graph
 from llm_graph.checkpoint_manager import checkpoint_manager
 
 from utils.validation import validate_permissions
+from utils.retrieve_member import retrieve_member
 
 class SetGuildDefault(commands.Cog):
     """
@@ -24,9 +24,8 @@ class SetGuildDefault(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
         if not await validate_permissions(interaction):
                  return
@@ -34,7 +33,7 @@ class SetGuildDefault(commands.Cog):
 
         await config.set_guild_vars_default(interaction.guild)
         await interaction.response.send_message(
-            f"{discord_obj.bot_name}'s settings are now default.",
+            f"{bot_name}'s settings are now default.",
             ephemeral=False
         )
     
@@ -46,19 +45,18 @@ class SetGuildDefault(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
         if not await validate_permissions(interaction):
                  return
 
-        thread_id = f"{discord_obj.guild.id}"
+        thread_id = config.get_graph_config(interaction)["configurable"]["thread_id"]
 
         await graph.clear_history(thread_id)
         checkpoint_manager.ai_configs = []
         await interaction.response.send_message(
-            f"{discord_obj.bot_name}'s memory has been cleared.",
+            f"{bot_name}'s memory has been cleared.",
             ephemeral=False
         )
 

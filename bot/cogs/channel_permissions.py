@@ -3,8 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 
 from config.config import config
-from bot.discord_obj_processor import discord_obj
 from utils.validation import validate_permissions
+from utils.retrieve_member import retrieve_member
 
 class ChannelPermissions(commands.Cog):
     """
@@ -23,9 +23,8 @@ class ChannelPermissions(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
         if not await validate_permissions(interaction):
                  return
@@ -33,7 +32,7 @@ class ChannelPermissions(commands.Cog):
 
         await config.allow_channel(interaction.channel)
         await interaction.response.send_message(
-            f"{discord_obj.bot_name} will now interact in this channel.",
+            f"{bot_name} will now interact in this channel.",
             ephemeral=False
         )
 
@@ -45,9 +44,8 @@ class ChannelPermissions(commands.Cog):
         Args:
             interaction (discord.Interaction): The interaction object representing the user's action.
         """
-        discord_obj.guild = interaction.guild
-        discord_obj.bot_member = await discord_obj.guild.fetch_member(self.bot.user.id)
-        discord_obj.bot_name = discord_obj.bot_member.display_name
+        bot_member: discord.Member = await retrieve_member(interaction, self.bot.user.id)
+        bot_name = bot_member.display_name
 
         if not await validate_permissions(interaction):
                  return
@@ -55,12 +53,12 @@ class ChannelPermissions(commands.Cog):
 
         if await config.disallow_channel(interaction.channel):
             await interaction.response.send_message(
-            f"{discord_obj.bot_name} will no longer interact in this channel.",
+            f"{bot_name} will no longer interact in this channel.",
             ephemeral=False
         )
         else:
                 await interaction.response.send_message(
-                f"{discord_obj.bot_name} is already not allowed to interact in this channel.",
+                f"{bot_name} is already not allowed to interact in this channel.",
                 ephemeral=False
             )
                 
